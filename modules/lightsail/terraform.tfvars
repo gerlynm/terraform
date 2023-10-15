@@ -1,5 +1,0 @@
-instance_name = "edu_lightsail"
-az = "us-east-1a"
-os = "ubuntu_22_04"
-bundle_id = "small_2_0"
-key_pair_name = "LightsailDefaultKeyPair"
