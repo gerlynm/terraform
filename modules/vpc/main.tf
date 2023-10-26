@@ -1,5 +1,5 @@
 resource "aws_vpc" "common_vpc" {
-  cidr_block = var.cidr  
+  cidr_block = var.cidr
 
   tags = {
     Name = var.vpc-name
@@ -32,8 +32,8 @@ resource "aws_route_table" "private_route_table" {
 
 resource "aws_subnet" "public_subnet1" {
   vpc_id                  = aws_vpc.common_vpc.id
-  cidr_block              = var.pub-subnet1-cidr  
-  availability_zone       = var.pub-subnet1-az 
+  cidr_block              = var.pub-subnet1-cidr
+  availability_zone       = var.pub-subnet1-az
   map_public_ip_on_launch = true
 
   tags = {
@@ -43,8 +43,8 @@ resource "aws_subnet" "public_subnet1" {
 
 resource "aws_subnet" "public_subnet2" {
   vpc_id                  = aws_vpc.common_vpc.id
-  cidr_block              = var.pub-subnet2-cidr  
-  availability_zone       = var.pub-subnet2-az  
+  cidr_block              = var.pub-subnet2-cidr
+  availability_zone       = var.pub-subnet2-az
   map_public_ip_on_launch = true
 
   tags = {
@@ -53,9 +53,9 @@ resource "aws_subnet" "public_subnet2" {
 }
 
 resource "aws_subnet" "private_subnet1" {
-  vpc_id    = aws_vpc.common_vpc.id
-  cidr_block = var.pvt-subnet1-cidr  
-  availability_zone = var.pvt-subnet1-az  
+  vpc_id            = aws_vpc.common_vpc.id
+  cidr_block        = var.pvt-subnet1-cidr
+  availability_zone = var.pvt-subnet1-az
 
   tags = {
     Name = var.pvtsubnet1-name
@@ -63,9 +63,9 @@ resource "aws_subnet" "private_subnet1" {
 }
 
 resource "aws_subnet" "private_subnet2" {
-  vpc_id    = aws_vpc.common_vpc.id
-  cidr_block = var.pvt-subnet2-cidr  
-  availability_zone = var.pvt-subnet2-az  
+  vpc_id            = aws_vpc.common_vpc.id
+  cidr_block        = var.pvt-subnet2-cidr
+  availability_zone = var.pvt-subnet2-az
 
   tags = {
     Name = var.pvtsubnet2-name
