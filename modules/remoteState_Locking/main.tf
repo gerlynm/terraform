@@ -22,3 +22,8 @@ resource "aws_dynamodb_table" "tf-dynamodb" {
 
   tags = var.tags
 }
+
+module "backend_config" {
+  source = "../backend"
+  
+}
