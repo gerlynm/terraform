@@ -4,6 +4,3 @@
 *.info
 *.hcl
 .terraform/
-terraform/*.tfstate
-terraform/*.tf
-terraform/*.tfvars
