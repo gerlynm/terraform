@@ -1,6 +1,6 @@
 resource "aws_security_group" "tf-sg" {
   name = var.aws_security_group
-  #vpc_id      = var.vpc_id
+  vpc_id      = var.vpc_id
 
   dynamic "ingress" {
     for_each = var.sg_ingress_ports
