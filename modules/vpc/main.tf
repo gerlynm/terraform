@@ -7,7 +7,7 @@ resource "aws_vpc" "tf_vpc" {
 
 resource "aws_internet_gateway" "tf_igw" {
   vpc_id = aws_vpc.tf_vpc.id
-  tags = var.tags
+  tags   = var.tags
 }
 
 resource "aws_route_table" "public_route_table" {
