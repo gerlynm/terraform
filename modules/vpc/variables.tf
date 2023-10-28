@@ -65,3 +65,10 @@ variable "pvt-subnet2-cidr" {
 variable "pvt-subnet2-az" {
   description = "private subnet2 availability zone"
 }
+
+variable "tags" {
+  default = {
+    Name        = ""
+    Environment = ""
+  }
+}
