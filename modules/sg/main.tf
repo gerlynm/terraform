@@ -1,6 +1,8 @@
 resource "aws_security_group" "tf-sg" {
   name = var.aws_security_group
+  description = var.aws_security_group
   vpc_id      = var.vpc_id
+  tags = var.tags
 
   dynamic "ingress" {
     for_each = var.sg_ingress_ports
@@ -17,5 +19,4 @@ resource "aws_security_group" "tf-sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = var.tags
 }
