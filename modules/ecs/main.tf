@@ -1,6 +1,6 @@
 # Create an Amazon ECR repository
-resource "aws_ecr_repository" "my_ecr_repo" {
-  name = "my-ecr-repo"
+resource "aws_ecr_repository" "tf_ecr_repo" {
+  name = var.ecr_repo_name
 }
 
 data "aws_vpc" "default" {
@@ -8,47 +8,58 @@ data "aws_vpc" "default" {
 }
 
 # Create an ECS Fargate task definition
-resource "aws_ecs_task_definition" "my_task_definition" {
-  family                   = "my-task"
-  container_definitions    = jsonencode([
-    {
-      "name"      : "my-container",
-      "image"     : "${aws_ecr_repository.my_ecr_repo.repository_url}:latest",
-      "cpu"       : 256,
-      "memory"    : 512,
-      "essential" : true
-    }
-  ])
+resource "aws_ecs_task_definition" "tf_task_definition" {
+  family                   = var.task_definition_name
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = var.cpu
+  memory                   = var.memory
+  container_definitions    = <<TASK_DEFINITION
+[
+  {
+    "name": "${var.container_name}",
+    "image": "${aws_ecr_repository.tf_ecr_repo.repository_url}:latest",
+    "cpu": "${var.cpu}",
+    "memory": "${var.cpu}",
+    "essential": true
+  }
+]
+TASK_DEFINITION
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
 }
 
 # Create an ECS cluster
-resource "aws_ecs_cluster" "my_ecs_cluster" {
-  name = "my-ecs-cluster"
+resource "aws_ecs_cluster" "tf_ecs_cluster" {
+  name = var.ecs_cluster
 }
 
 # Create an ECS Fargate service
-resource "aws_ecs_service" "my_ecs_service" {
-  name            = "my-ecs-service"
-  cluster         = aws_ecs_cluster.my_ecs_cluster.id
-  task_definition = aws_ecs_task_definition.my_task_definition.arn
+resource "aws_ecs_service" "tf_ecs_service" {
+  name            = var.ecs_servive
+  cluster         = aws_ecs_cluster.tf_ecs_cluster.id
+  task_definition = aws_ecs_task_definition.tf_task_definition.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-  
+
   network_configuration {
-    subnets          = ["subnet-0c92761fcad57a20e", "subnet-0ede47596eee8fb38"]  # Replace with your subnet IDs
-    security_groups  = ["sg-0fd039f5daa34b4d6"]     # Replace with your security group IDs
+    subnets          = var.subnets         # Replace with your subnet IDs
+    security_groups  = var.security_groups # Replace with your security group IDs
     assign_public_ip = true
   }
 }
 
 # Create an Application Load Balancer (ALB)
-resource "aws_lb" "my_alb" {
-  name               = "my-alb"
+resource "aws_lb" "tf_alb" {
+  name               = var.alb_name
   internal           = false
   load_balancer_type = "application"
-  subnets            = ["subnet-0c92761fcad57a20e", "subnet-0ede47596eee8fb38"]  # Replace with your subnet IDs
+  subnets            = var.subnets # Replace with your subnet IDs
 
- /* access_logs {
+  /* access_logs {
     bucket = "my-alb-logs-bucket"
     prefix = "alb-logs"
     enabled = true
@@ -56,40 +67,42 @@ resource "aws_lb" "my_alb" {
 }
 
 # Create a target group
-resource "aws_lb_target_group" "my_target_group" {
-  name     = "my-target-group"
+resource "aws_lb_target_group" "tf_target_group" {
+  name     = var.target_group_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = data.aws_vpc.default.id  # Replace with your VPC ID
+  vpc_id   = data.aws_vpc.default.id # Replace with your VPC ID
 }
 
 # Create a listener for the ALB
-resource "aws_lb_listener" "my_listener" {
-  load_balancer_arn = aws_lb.my_alb.arn
+resource "aws_lb_listener" "tf_listener" {
+  load_balancer_arn = aws_lb.tf_alb.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "fixed-response"
-    status_code      = "200"
-    content_type     = "text/plain"
-    message_body     = "OK"
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
-
 # Attach ECS service to target group
-resource "aws_lb_listener_rule" "my_listener_rule" {
-  listener_arn = aws_lb.my_alb.arn
+resource "aws_lb_listener_rule" "tf_listener_rule" {
+  listener_arn = aws_lb_listener.tf_listener.arn
   priority     = 100
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_target_group.arn
+    target_group_arn = aws_lb_target_group.tf_target_group.arn
   }
 
   condition {
     host_header {
-      values = ["my-domain.com"]  # Replace with your domain
+      values = var.domain # Replace with your domain
     }
   }
 }
