@@ -1,17 +1,23 @@
 resource "aws_db_instance" "rds_instance" {
-  allocated_storage      = var.allocated_storage
-  engine                 = var.engine_type
-  engine_version         = var.engine_version
-  instance_class         = var.instance_type
-  identifier             = var.identifier
-  db_name                = var.db_name
-  username               = var.master_username
-  password               = var.master_password
-  parameter_group_name   = aws_db_parameter_group.rds_instance.id
-  db_subnet_group_name   = aws_db_subnet_group.rds_instance.id
-  vpc_security_group_ids = var.vpc_security_group_ids
-  skip_final_snapshot    = true
-  apply_immediately      = true
+  identifier                = var.identifier
+  allocated_storage         = var.allocated_storage
+  instance_class            = var.instance_type
+  engine                    = var.engine_type
+  engine_version            = var.engine_version
+  db_name                   = var.db_name
+  username                  = var.master_username
+  password                  = var.master_password
+  backup_retention_period   = 7
+  storage_encrypted         = true
+  kms_key_id                = var.kms_key_id
+  parameter_group_name      = aws_db_parameter_group.rds_instance.id
+  db_subnet_group_name      = aws_db_subnet_group.rds_instance.id
+  vpc_security_group_ids    = var.vpc_security_group_ids
+  copy_tags_to_snapshot     = true
+  skip_final_snapshot       = false
+  final_snapshot_identifier = var.identifier
+  apply_immediately         = true
+  tags                      = var.tags
   lifecycle {
     ignore_changes = [
       engine_version
@@ -27,9 +33,7 @@ resource "aws_db_parameter_group" "rds_instance" {
 
 resource "aws_db_subnet_group" "rds_instance" {
   name       = var.identifier
-  subnet_ids = [var.aws_subnet_1, var.aws_subnet_2]
+  subnet_ids = [var.subnet_1, var.subnet_2]
 
-  tags = {
-    Name = var.identifier
-  }
+  tags = var.tags
 }

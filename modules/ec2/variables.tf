@@ -1,32 +1,32 @@
 variable "instance_type" {
   type        = string
-  description = "The EC2 instance type to be used for the virtual machine."
+  description = "EC2 instance type"
 }
 
 variable "key_name" {
   type        = string
-  description = "The name of the key pair used for SSH authentication to the EC2 instance."
+  description = "name of the key pair"
 }
 
 variable "availability_zone" {
   type        = string
-  description = "The AWS availability zone in which to deploy the resources."
+  description = "availability zone"
 }
 
 variable "subnet_id" {
   type        = string
-  description = "The ID of the VPC subnet where the EC2 instance will be launched."
+  description = "ID of the VPC subnet"
 }
 
 variable "aws_security_group_id" {
   type        = list(string)
-  description = "A list of security group IDs for controlling inbound and outbound network traffic."
+  description = "security group IDs"
 }
 
 variable "volume_size" {
   type        = number
   default     = 8
-  description = "The size (in GB) of the EBS volume to attach to the EC2 instance. Defaults to 8GB."
+  description = "The size (in GB) of the EBS volume. Defaults to 8GB."
 }
 
 variable "tags" {
@@ -35,21 +35,21 @@ variable "tags" {
     Name        = "demo"
     Environment = "demo"
   }
-  description = "A map of key-value pairs to tag the AWS resources created."
+  description = "tag the resources."
 }
 
 variable "security_group_name" {
   type = string
-  description = "The name of the security group to associate with the EC2 instance. Specify the security group by its name."
+  description = "security group name."
 }
 
 variable "vpc_id" {
   type = string
-  description = "The ID of the VPC where the EC2 instance will be deployed. Select the specific VPC for the instance deployment."
+  description = "VPC id."
 }
 
 variable "ingress_ports" {
   type = list(number)
-  description = "A list of numbers representing ingress ports to open in the security group. Specify the ports that should be accessible for incoming traffic."
+  description = "Specify the ports"
 }
 
